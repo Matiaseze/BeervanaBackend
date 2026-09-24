@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="vendor/autoload.php"
+         colors="true"
+>
+    <testsuites>
+        <testsuite name="Unit">
+            <directory>tests/Unit</directory>
+        </testsuite>
+        <testsuite name="Feature">
+            <directory>tests/Feature</directory>
+        </testsuite>
+    </testsuites>
+    <source>
+        <include>
+            <directory>app</directory>
+        </include>
+    </source>
+    <php>
+        <env name="APP_ENV" value="testing"/>
+        <env name="APP_MAINTENANCE_DRIVER" value="file"/>
+        <env name="BCRYPT_ROUNDS" value="4"/>
+        <env name="CACHE_STORE" value="array"/>
+
+        <!--
+            Base de tests separada. RefreshDatabase vacía la base en cada corrida,
+            así que esto NO puede apuntar a la base de desarrollo.
+
+            Hacen falta <server> Y <env>, las dos con force="true":
+            docker-compose define DB_DATABASE en el entorno del contenedor, PHP
+            lo copia a $_ENV y a $_SERVER, y <env> solo pisa el primero. Laravel
+            lee con phpdotenv, que consulta $_SERVER antes que $_ENV, así que con
+            <env> sola los tests seguían apuntando a la base de desarrollo.
+            Tests/TestCase.php tiene además una verificación que aborta si la
+            base no es de test.
+
+            Se usa PostgreSQL y no SQLite a propósito: es el mismo motor que Neon
+            en producción, y ya nos mordieron diferencias de pgsql (sslmode, los
+            decimales que vuelven como string).
+        -->
+        <server name="DB_CONNECTION" value="pgsql" force="true"/>
+        <server name="DB_DATABASE" value="beervana_test" force="true"/>
+        <env name="DB_CONNECTION" value="pgsql" force="true"/>
+        <env name="DB_DATABASE" value="beervana_test" force="true"/>
+        <env name="MAIL_MAILER" value="array"/>
+        <env name="PULSE_ENABLED" value="false"/>
+        <env name="QUEUE_CONNECTION" value="sync"/>
+        <env name="SESSION_DRIVER" value="array"/>
+        <env name="TELESCOPE_ENABLED" value="false"/>
+    </php>
+</phpunit>
