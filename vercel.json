@@ -6,7 +6,6 @@
             "runtime": "vercel-php@0.8.0"
         }
     },
-    "//": "En Lambda el disco es de solo lectura salvo /tmp. Laravel da por sentado que puede escribir en storage/ y bootstrap/cache/, asi que estas variables mueven todo lo que escribe hacia /tmp. Sin ellas la app no arranca: el primer request muere queriendo escribir bootstrap/cache/packages.php. No son secretos sino hechos del entorno serverless, por eso viven en el repo y no en el panel de Vercel.",
     "env": {
         "APP_CONFIG_CACHE": "/tmp/config.php",
         "APP_EVENTS_CACHE": "/tmp/events.php",
